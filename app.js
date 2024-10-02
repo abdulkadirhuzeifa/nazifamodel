@@ -20,20 +20,26 @@ function handleSubmit(e) {
         body: JSON.stringify({ prompt: prompt, aspect_ratio: aspectRatio })
     })
     .then(response => {
-        console.log('Response status:', response.status);
-        return response.json();
+        console.log('ProxyApi Response status:', response.status);
+        return response.text();
+    })
+    .then(text => {
+        console.log('ProxyApi Raw response:', text);
+        return JSON.parse(text);
     })
     .then(data => {
-        console.log('API response:', data);
+        console.log('ProxyApi Parsed response:', data);
         if (data.error) {
             document.getElementById("apiResponse").innerText = "Error: " + data.error;
-        } else {
+        } else if (data.id) {
             document.getElementById("apiResponse").innerText = "Image generation started. ID: " + data.id;
             checkImageStatus(data.id);
+        } else {
+            document.getElementById("apiResponse").innerText = "Unexpected response from API";
         }
     })
     .catch(error => {
-        console.error('Error:', error);
+        console.error('Error in proxyApi call:', error);
         document.getElementById("apiResponse").innerText = "Error calling API: " + error.message;
     });
 }
@@ -42,19 +48,33 @@ function checkImageStatus(predictionId) {
     console.log('Checking status for prediction:', predictionId);
     fetch(`/.netlify/functions/checkStatus?id=${predictionId}`)
     .then(response => {
-        console.log('CheckStatus response status:', response.status);
-        return response.json();
+        console.log('CheckStatus Response status:', response.status);
+        return response.text();
+    })
+    .then(text => {
+        console.log('CheckStatus Raw response:', text);
+        return JSON.parse(text);
     })
     .then(data => {
-        console.log('CheckStatus response data:', data);
-        document.getElementById("apiResponse").innerText = "Status: " + data.status;
-        if (data.status === "succeeded") {
-            document.getElementById("generatedImage").src = data.output[0];
-            document.getElementById("generatedImage").style.display = "block";
-        } else if (data.status === "failed") {
-            document.getElementById("apiResponse").innerText = "Image generation failed: " + data.error;
+        console.log('CheckStatus Parsed response:', data);
+        if (data.error) {
+            document.getElementById("apiResponse").innerText = "Error checking status: " + data.error;
+        } else if (data.status) {
+            document.getElementById("apiResponse").innerText = "Status: " + data.status;
+            if (data.status === "succeeded") {
+                if (data.output && data.output[0]) {
+                    document.getElementById("generatedImage").src = data.output[0];
+                    document.getElementById("generatedImage").style.display = "block";
+                } else {
+                    document.getElementById("apiResponse").innerText += " (No image URL in response)";
+                }
+            } else if (data.status === "failed") {
+                document.getElementById("apiResponse").innerText = "Image generation failed: " + (data.error || "Unknown error");
+            } else {
+                setTimeout(() => checkImageStatus(predictionId), 2000);
+            }
         } else {
-            setTimeout(() => checkImageStatus(predictionId), 2000);
+            document.getElementById("apiResponse").innerText = "Unexpected response from status check";
         }
     })
     .catch((error) => {
