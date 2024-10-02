@@ -35,6 +35,23 @@
     <div id="apiResponse"></div>
     <img id="generatedImage" style="display: none; max-width: 100%;" alt="Generated Image">
 
+    <script>
+        console.log('Inline script executed');
+        document.addEventListener('DOMContentLoaded', (event) => {
+            console.log('DOM fully loaded and parsed');
+            const form = document.getElementById("apiForm");
+            if (form) {
+                console.log('Form found');
+                form.addEventListener("submit", function (e) {
+                    e.preventDefault();
+                    console.log('Form submitted');
+                    document.getElementById("apiResponse").innerText = "Form submission detected";
+                });
+            } else {
+                console.error('Form not found');
+            }
+        });
+    </script>
     <script src="app.js"></script>
 </body>
 
