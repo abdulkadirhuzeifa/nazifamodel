@@ -10,7 +10,32 @@ function handleSubmit(e) {
     console.log('Prompt:', prompt);
     console.log('Aspect Ratio:', aspectRatio);
 
-    document.getElementById("apiResponse").innerText = "Form submitted from app.js";
+    document.getElementById("apiResponse").innerText = "Sending request to API...";
+
+    fetch('/.netlify/functions/proxyApi', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ prompt: prompt, aspect_ratio: aspectRatio })
+    })
+    .then(response => {
+        console.log('Response status:', response.status);
+        return response.json();
+    })
+    .then(data => {
+        console.log('API response:', data);
+        if (data.error) {
+            document.getElementById("apiResponse").innerText = "Error: " + data.error;
+        } else {
+            document.getElementById("apiResponse").innerText = "API response received. ID: " + data.id;
+            // Here you would typically call checkImageStatus(data.id)
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        document.getElementById("apiResponse").innerText = "Error calling API: " + error.message;
+    });
 }
 
 document.addEventListener('DOMContentLoaded', (event) => {

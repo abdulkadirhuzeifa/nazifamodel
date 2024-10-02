@@ -5,6 +5,20 @@ exports.handler = async function(event, context) {
     console.log('Request method:', event.httpMethod);
     console.log('Request body:', event.body);
     
+    if (event.httpMethod !== 'POST') {
+        return {
+            statusCode: 405,
+            body: JSON.stringify({ error: 'Method Not Allowed' })
+        };
+    }
+
+    if (!event.body) {
+        return {
+            statusCode: 400,
+            body: JSON.stringify({ error: 'Missing request body' })
+        };
+    }
+
     let requestBody;
     try {
         requestBody = JSON.parse(event.body);
@@ -64,7 +78,7 @@ exports.handler = async function(event, context) {
         console.error('Error calling Replicate API:', error);
         return {
             statusCode: 500,
-            body: JSON.stringify({ error: 'Error calling Replicate API' })
+            body: JSON.stringify({ error: 'Error calling Replicate API: ' + error.message })
         };
     }
 };
