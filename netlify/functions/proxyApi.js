@@ -2,6 +2,8 @@ const fetch = require('node-fetch');
 
 exports.handler = async function(event, context) {
     console.log('ProxyApi function called');
+    console.log('Request method:', event.httpMethod);
+    console.log('Request body:', event.body);
     
     let requestBody;
     try {
@@ -14,9 +16,12 @@ exports.handler = async function(event, context) {
         };
     }
 
+    console.log('Parsed request body:', requestBody);
+
     const { prompt, aspect_ratio } = requestBody;
 
     if (!prompt || !aspect_ratio) {
+        console.error('Missing prompt or aspect_ratio in request body');
         return {
             statusCode: 400,
             body: JSON.stringify({ error: 'Missing prompt or aspect_ratio in request body' })
@@ -24,6 +29,7 @@ exports.handler = async function(event, context) {
     }
 
     try {
+        console.log('Calling Replicate API');
         const response = await fetch('https://api.replicate.com/v1/predictions', {
             method: 'POST',
             headers: {
@@ -49,6 +55,7 @@ exports.handler = async function(event, context) {
         });
 
         const data = await response.json();
+        console.log('Replicate API response:', data);
         return {
             statusCode: 200,
             body: JSON.stringify(data)
