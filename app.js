@@ -19,20 +19,26 @@ document.getElementById("apiForm").addEventListener("submit", function (e) {
         if (data.error) {
             document.getElementById("apiResponse").innerText = "Error: " + data.error;
         } else {
-            document.getElementById("apiResponse").innerText = "Image generated successfully!";
+            document.getElementById("apiResponse").innerText = "Image generation started. ID: " + data.id;
             checkImageStatus(data.id);
         }
     })
     .catch((error) => {
         console.error('Error:', error);
-        document.getElementById("apiResponse").innerText = "Error calling API: " + error.message;
+        document.getElementById("apiResponse").innerText = "Error calling proxyApi: " + error.message;
     });
 });
 
 function checkImageStatus(predictionId) {
     fetch(`/.netlify/functions/checkStatus?id=${predictionId}`)
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+    })
     .then(data => {
+        document.getElementById("apiResponse").innerText = "Status: " + data.status;
         if (data.status === "succeeded") {
             document.getElementById("generatedImage").src = data.output[0];
             document.getElementById("generatedImage").style.display = "block";
