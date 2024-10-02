@@ -34,12 +34,18 @@ exports.handler = async function(event, context) {
 
     return {
       statusCode: 200,
+      headers: {
+        'Content-Type': 'application/json'
+      },
       body: JSON.stringify(data)
     };
   } catch (error) {
     console.error('Error checking prediction status:', error);
     return {
       statusCode: 500,
+      headers: {
+        'Content-Type': 'application/json'
+      },
       body: JSON.stringify({ error: "Error checking prediction status: " + error.message })
     };
   }

@@ -49,10 +49,14 @@ function checkImageStatus(predictionId) {
     fetch(`/.netlify/functions/checkStatus?id=${predictionId}`)
     .then(response => {
         console.log('CheckStatus Response status:', response.status);
+        console.log('CheckStatus Response headers:', JSON.stringify([...response.headers]));
         return response.text();
     })
     .then(text => {
         console.log('CheckStatus Raw response:', text);
+        if (text.trim().startsWith('<!DOCTYPE html>')) {
+            throw new Error('Received HTML instead of JSON');
+        }
         return JSON.parse(text);
     })
     .then(data => {
