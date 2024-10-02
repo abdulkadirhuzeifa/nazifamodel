@@ -1,10 +1,6 @@
-// netlify/functions/checkStatus.js
-
-exports.handler = async function (event, context) {
-    const { id } = event.queryStringParameters;
-
-    return {
-        statusCode: 200,
-        body: JSON.stringify({ message: `Checking status for ID: ${id}` }),
-    };
+exports.handler = async function(event, context) {
+  return {
+    statusCode: 200,
+    body: JSON.stringify({ message: "CheckStatus function is working" })
+  };
 };

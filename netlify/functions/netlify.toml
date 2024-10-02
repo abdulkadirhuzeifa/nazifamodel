@@ -1,10 +1,8 @@
-// netlify/functions/checkStatus.js
+[build]
+  publish = "."
+  functions = "netlify/functions"
 
-exports.handler = async function (event, context) {
-    const { id } = event.queryStringParameters;
-
-    return {
-        statusCode: 200,
-        body: JSON.stringify({ message: `Checking status for ID: ${id}` }),
-    };
-};
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
