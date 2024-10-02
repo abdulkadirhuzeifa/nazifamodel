@@ -4,22 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Image Generation Dashboard</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            padding: 20px;
-        }
-
-        form {
-            margin-bottom: 20px;
-        }
-
-        label {
-            display: block;
-            margin: 10px 0 5px;
-        }
-    </style>
+    <title>Generate an Image</title>
 </head>
 
 <body>
@@ -29,7 +14,7 @@
         <input type="text" id="prompt" name="prompt" required><br><br>
 
         <label for="aspect_ratio">Choose Aspect Ratio:</label>
-        <select id="aspect_ratio" name="aspect_ratio" required>
+        <select id="aspect_ratio" name="aspect_ratio">
             <option value="1:1">1:1</option>
             <option value="16:9">16:9</option>
             <option value="21:9">21:9</option>
@@ -48,6 +33,7 @@
     </form>
 
     <div id="apiResponse"></div>
+    <img id="generatedImage" style="display: none; max-width: 100%;" alt="Generated Image">
 
     <script src="app.js"></script>
 </body>
