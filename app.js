@@ -14,14 +14,18 @@ document.getElementById("apiForm").addEventListener("submit", function (e) {
         },
         body: JSON.stringify({ prompt: prompt, aspect_ratio: aspectRatio })
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+    })
     .then(data => {
         if (data.error) {
-            document.getElementById("apiResponse").innerText = "Error: " + data.error;
-        } else {
-            document.getElementById("apiResponse").innerText = "Image generation started. ID: " + data.id;
-            checkImageStatus(data.id);
+            throw new Error(data.error);
         }
+        document.getElementById("apiResponse").innerText = "Image generation started. ID: " + data.id;
+        checkImageStatus(data.id);
     })
     .catch((error) => {
         console.error('Error:', error);
