@@ -24,6 +24,7 @@ document.getElementById("apiForm").addEventListener("submit", function (e) {
         if (data.error) {
             throw new Error(data.error);
         }
+        console.log('ProxyApi response:', data);
         document.getElementById("apiResponse").innerText = "Image generation started. ID: " + data.id;
         checkImageStatus(data.id);
     })
@@ -34,14 +35,17 @@ document.getElementById("apiForm").addEventListener("submit", function (e) {
 });
 
 function checkImageStatus(predictionId) {
+    console.log('Checking status for prediction:', predictionId);
     fetch(`/.netlify/functions/checkStatus?id=${predictionId}`)
     .then(response => {
+        console.log('CheckStatus response status:', response.status);
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         return response.json();
     })
     .then(data => {
+        console.log('CheckStatus response data:', data);
         document.getElementById("apiResponse").innerText = "Status: " + data.status;
         if (data.status === "succeeded") {
             document.getElementById("generatedImage").src = data.output[0];
@@ -53,7 +57,7 @@ function checkImageStatus(predictionId) {
         }
     })
     .catch((error) => {
-        console.error('Error:', error);
+        console.error('Error checking image status:', error);
         document.getElementById("apiResponse").innerText = "Error checking image status: " + error.message;
     });
 }
